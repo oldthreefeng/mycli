@@ -6,33 +6,52 @@ import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
 	ecs "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/ecs/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/ecs/v2/model"
+	eip "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/eip/v2"
 )
 
 const (
-	endpoint     = "https://ecs.ap-southeast-3.myhuaweicloud.com"
-	VpcEndpoint = "https://vpc.ap-southeast-3.myhuaweicloud.com"
-	projectID    = "06b275f705800f262f3bc014ffcdbde1"
+	//endpoint     = "https://ecs.ap-southeast-3.myhuaweicloud.com"
+	//VpcEndpoint  = "https://vpc.ap-southeast-3.myhuaweicloud.com"
+	//projectID    = "06b275f705800f262f3bc014ffcdbde1"
 	defaultCount = 1
 )
 
 type HClient struct {
-	Ak     string
-	Sk     string
-	client *ecs.EcsClient
+	Count            int32
+	Ak               string
+	Sk               string
+	EcsEndpoint      string
+	VpcEndpoint      string
+	ProjectId        string
+	AvailabilityZone string
+	EcsClient        *ecs.EcsClient
+	EipClient        *eip.EipClient
 }
 
-func GetDefaultHAuth(ak, sk string) *HClient {
+func GetDefaultHAuth(ak, sk, projectId, AvailabilityZone string) *HClient {
+	n := len(AvailabilityZone)
+	ecsEndpoint := fmt.Sprintf("https://ecs.%s.myhuaweicloud.com", AvailabilityZone[:n-1])
+	vpcEndpoint := fmt.Sprintf("https://vpc.%s.myhuaweicloud.com", AvailabilityZone[:n-1])
 	auth := basic.NewCredentialsBuilder().
 		WithAk(ak).
 		WithSk(sk).
-		WithProjectId(projectID).
+		WithProjectId(projectId).
 		Build()
 	return &HClient{
-		Ak: ak,
-		Sk: sk,
-		client: ecs.NewEcsClient(
+		EcsEndpoint:      ecsEndpoint,
+		VpcEndpoint:      vpcEndpoint,
+		ProjectId:        projectId,
+		AvailabilityZone: AvailabilityZone,
+		Ak:               ak,
+		Sk:               sk,
+		EcsClient: ecs.NewEcsClient(
 			ecs.EcsClientBuilder().
-				WithEndpoint(endpoint).
+				WithEndpoint(ecsEndpoint).
+				WithCredential(auth).
+				Build()),
+		EipClient: eip.NewEipClient(
+			eip.EipClientBuilder().
+				WithEndpoint(vpcEndpoint).
 				WithCredential(auth).
 				Build()),
 	}
@@ -40,7 +59,7 @@ func GetDefaultHAuth(ak, sk string) *HClient {
 
 func (h *HClient) Show(serverid string) {
 
-	client := h.client
+	client := h.EcsClient
 
 	request := &model.ShowServerRequest{}
 	request.ServerId = serverid
@@ -54,13 +73,13 @@ func (h *HClient) Show(serverid string) {
 	}
 }
 
-func (h *HClient) GenerateEipServer(count int32, eip bool) []string {
+func (h *HClient) GenerateEipServer(count int32, eip bool, FlavorRef, ImageRef, Vpcid, SubnetId, adminPass, keyName string) []string {
 
-	client := h.client
+	client := h.EcsClient
 	request := &model.CreatePostPaidServersRequest{}
 	var listPostPaidServerNicNicsPostPaidServer = []model.PostPaidServerNic{
 		{
-			SubnetId: "b5ea4e5d-de19-442b-ac32-3998100e4854",
+			SubnetId: SubnetId,
 		},
 	}
 	var listPostPaidServerTagServerTagsPostPaidServer = []model.PostPaidServerTag{
@@ -69,7 +88,7 @@ func (h *HClient) GenerateEipServer(count int32, eip bool) []string {
 			Value: "sealos",
 		},
 	}
-	sizePostPaidServerEipBandwidth := int32(5)
+	sizePostPaidServerEipBandwidth := int32(50)
 	chargemodePostPaidServerEipBandwidth := "traffic"
 	bandwidthPostPaidServerEip := &model.PostPaidServerEipBandwidth{
 		Size:       &sizePostPaidServerEipBandwidth,
@@ -87,24 +106,24 @@ func (h *HClient) GenerateEipServer(count int32, eip bool) []string {
 		}
 	}
 	countPostPaidServer := count
-	isAutoRenamePostPaidServer := true
-	keyNamePostPaidServer := "release"
-	adminPassPostPaidServer := "Louishong4168#123"
+	isAutoRenamePostPaidServer := false
+	keyNamePostPaidServer := keyName
+	adminPassPostPaidServer := adminPass
 	sizePostPaidServerRootVolume := int32(40)
 	rootVolumePostPaidServer := &model.PostPaidServerRootVolume{
 		Volumetype: model.GetPostPaidServerRootVolumeVolumetypeEnum().SSD,
 		Size:       &sizePostPaidServerRootVolume,
 	}
 	serverCreatePostPaidServersRequestBody := &model.PostPaidServer{
-		AvailabilityZone: "ap-southeast-3a",
-		FlavorRef:        "kc1.large.2",
-		ImageRef:         "456416e6-1270-46a4-975e-3558ac03d4cd",
+		AvailabilityZone: h.AvailabilityZone,
+		FlavorRef:        FlavorRef,
+		ImageRef:         ImageRef,
 		Name:             "sealos",
 		Nics:             listPostPaidServerNicNicsPostPaidServer,
 		Publicip:         publicipPostPaidServer,
 		RootVolume:       rootVolumePostPaidServer,
 		ServerTags:       &listPostPaidServerTagServerTagsPostPaidServer,
-		Vpcid:            "a55545d8-a4cb-436d-a8ec-45c66aff725c",
+		Vpcid:            Vpcid,
 		KeyName:          &keyNamePostPaidServer,
 		AdminPass:        &adminPassPostPaidServer,
 		IsAutoRename:     &isAutoRenamePostPaidServer,
@@ -128,7 +147,7 @@ func (h *HClient) GenerateEipServer(count int32, eip bool) []string {
 
 func (h *HClient) DeleteServer(serverId string) {
 
-	client := h.client
+	client := h.EcsClient
 
 	request := &model.DeleteServersRequest{}
 	var listServerIdServersDeleteServersRequestBody = []model.ServerId{
@@ -151,7 +170,7 @@ func (h *HClient) DeleteServer(serverId string) {
 }
 
 func (h *HClient) ListServer() {
-	client := h.client
+	client := h.EcsClient
 	request := &model.ListServersDetailsRequest{}
 	response, err := client.ListServersDetails(request)
 

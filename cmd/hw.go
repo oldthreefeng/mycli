@@ -23,12 +23,20 @@ import (
 )
 
 var (
-	ak       = getDefaultPathname("ak", "")
-	sk       = getDefaultPathname("sk", "")
-	eip      bool
-	count    int32
-	serverId string
-	eipId     string
+	ak               = getDefaultPathname("ak", "")
+	sk               = getDefaultPathname("sk", "")
+	eip              bool
+	count            int32
+	serverId         string
+	eipId            string
+	adminPass        string
+	SubnetId         string
+	Vpcid            string
+	ImageRef         string
+	FlavorRef        string
+	AvailabilityZone string
+	keyName          string
+	projectId        string
 )
 
 func init() {
@@ -76,14 +84,24 @@ func NewHuaweiCreateCmd() *cobra.Command {
 		Short: "create ecs in sgp",
 		Run:   HuaweiCreateCmdFunc,
 	}
-	cmd.Flags().BoolVar(&eip, "eip", false, "create with eip or not")
-	cmd.Flags().Int32VarP(&count, "count", "c", 1, "Specify ecs count")
+	cmd.Flags().BoolVar(&eip, "eip", false, "create huawei ecs with eip or not")
+	cmd.Flags().Int32VarP(&count, "count", "c", 1, "Specify huawei ecs count")
+	cmd.Flags().StringVar(&adminPass, "adminPass", "Louishong4168@123", "huawei root pass")
+	cmd.Flags().StringVar(&SubnetId, "SubnetId", "b5ea4e5d-de19-442b-ac32-3998100e4854", "huawei subnet id")
+	cmd.Flags().StringVar(&Vpcid, "Vpcid", "a55545d8-a4cb-436d-a8ec-45c66aff725c", "huawei Vpcid ")
+	cmd.Flags().StringVar(&ImageRef, "ImageRef", "456416e6-1270-46a4-975e-3558ac03d4cd", "huawei image id , default is 2C 4G")
+	cmd.Flags().StringVar(&FlavorRef, "FlavorRef", "kc1.large.2", "huawei falvor id , default is centos 7.6")
+	// huawei cloud only allow one method to auth
+	cmd.Flags().StringVar(&keyName, "keyName", "", "ssh key name")
+
+	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
+	cmd.Flags().StringVar(&AvailabilityZone, "Zone", "ap-southeast-3a", "huawei AvailabilityZone , default is centos xin jia po")
 	return cmd
 }
 
 func HuaweiCreateCmdFunc(cmd *cobra.Command, args []string) {
-	hc := huawei.GetDefaultHAuth(ak, sk)
-	hc.GenerateEipServer(count, eip)
+	hc := huawei.GetDefaultHAuth(ak, sk, projectId, AvailabilityZone)
+	hc.GenerateEipServer(count, eip, FlavorRef, ImageRef, Vpcid, SubnetId, adminPass, keyName)
 }
 
 func NewHuaweiListCmd() *cobra.Command {
@@ -92,13 +110,15 @@ func NewHuaweiListCmd() *cobra.Command {
 		Short: "list ecs in sgp",
 		Run:   HuaweiListCmdFunc,
 	}
-	cmd.Flags().StringVar(&serverId, "id", "", "ecs server id")
+	cmd.Flags().StringVar(&serverId, "id", "", "huawei ecs server id")
+	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
+	cmd.Flags().StringVar(&AvailabilityZone, "FlavorRef", "ap-southeast-3a", "huawei AvailabilityZone , default is centos xin jia po")
 	cmd.AddCommand(NewHuaweiIpCmd())
 	return cmd
 }
 
 func HuaweiListCmdFunc(cmd *cobra.Command, args []string) {
-	hc := huawei.GetDefaultHAuth(ak, sk)
+	hc := huawei.GetDefaultHAuth(ak, sk, projectId, AvailabilityZone)
 	if serverId != "" {
 		hc.Show(serverId)
 	} else {
@@ -112,11 +132,13 @@ func NewHuaweiIpCmd() *cobra.Command {
 		Short: "ip ecs in sgp",
 		Run:   HuaweiListIpCmdFunc,
 	}
+	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
+	cmd.Flags().StringVar(&AvailabilityZone, "FlavorRef", "ap-southeast-3a", "huawei AvailabilityZone , default is centos xin jia po")
 	return cmd
 }
 
 func HuaweiListIpCmdFunc(cmd *cobra.Command, args []string) {
-	hc := huawei.GetDefaultHAuth(ak, sk)
+	hc := huawei.GetDefaultHAuth(ak, sk, projectId, AvailabilityZone)
 	hc.ListIps()
 }
 
@@ -126,13 +148,15 @@ func NewHuaweiDeleteCmd() *cobra.Command {
 		Short: "delete ecs in sgp",
 		Run:   HuaweiDeleteCmdFunc,
 	}
-	cmd.Flags().StringVar(&serverId, "id", "", "ecs server id")
-	cmd.Flags().StringVar(&eipId, "eipId", "", "ecs server public ipid")
+	cmd.Flags().StringVar(&serverId, "id", "", "huawei ecs server id")
+	cmd.Flags().StringVar(&eipId, "eipId", "", "huawei ecs server public eipid")
+	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
+	cmd.Flags().StringVar(&AvailabilityZone, "FlavorRef", "ap-southeast-3a", "huawei AvailabilityZone , default is centos xin jia po")
 	return cmd
 }
 
 func HuaweiDeleteCmdFunc(cmd *cobra.Command, args []string) {
-	hc := huawei.GetDefaultHAuth(ak, sk)
+	hc := huawei.GetDefaultHAuth(ak, sk, projectId, AvailabilityZone)
 	if serverId != "" {
 		hc.DeleteServer(serverId)
 	}

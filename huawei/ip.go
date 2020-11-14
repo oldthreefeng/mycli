@@ -18,7 +18,7 @@ func (h *HClient) ListIps() {
 
 	client := eip.NewEipClient(
 		eip.EipClientBuilder().
-			WithEndpoint(VpcEndpoint).
+			WithEndpoint(h.VpcEndpoint).
 			WithCredential(auth).
 			Build())
 
@@ -43,7 +43,7 @@ func (h *HClient) DeleteIp(ipId string) {
 
 	client := eip.NewEipClient(
 		eip.EipClientBuilder().
-			WithEndpoint(VpcEndpoint).
+			WithEndpoint(h.VpcEndpoint).
 			WithCredential(auth).
 			Build())
 
