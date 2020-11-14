@@ -1,0 +1,15 @@
+[
+    {
+        "fixed_ip_address": "192.168.0.59",
+        "floating_ip_address": "119.8.185.30",
+        "floating_network_id": "0a2228f2-7f8a-45f1-8e09-9039e1d09975",
+        "id": "1e3c13e5-551e-4929-91b2-1cbfa5fc7c7d",
+        "port_id": "24bb057a-7143-4f23-a8aa-369c9a62cdf1",
+        "router_id": "a55545d8-a4cb-436d-a8ec-45c66aff725c",
+        "status": "ACTIVE",
+        "tenant_id": "06b275f705800f262f3bc014ffcdbde1",
+        "project_id": "06b275f705800f262f3bc014ffcdbde1",
+        "created_at": "2020-11-14T17:42:43Z",
+        "updated_at": "2020-11-14T17:42:45Z"
+    }
+]
