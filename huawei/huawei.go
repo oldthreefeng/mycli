@@ -88,15 +88,15 @@ func (h *HClient) GenerateEipServer(count int32, eip bool, FlavorRef, ImageRef, 
 			Value: "sealos",
 		},
 	}
-	sizePostPaidServerEipBandwidth := int32(50)
-	chargemodePostPaidServerEipBandwidth := "traffic"
-	bandwidthPostPaidServerEip := &model.PostPaidServerEipBandwidth{
-		Size:       &sizePostPaidServerEipBandwidth,
-		Sharetype:  model.GetPostPaidServerEipBandwidthSharetypeEnum().PER,
-		Chargemode: &chargemodePostPaidServerEipBandwidth,
-	}
 	publicipPostPaidServer := &model.PostPaidServerPublicip{}
 	if eip {
+		sizePostPaidServerEipBandwidth := int32(50)
+		chargemodePostPaidServerEipBandwidth := "traffic"
+		bandwidthPostPaidServerEip := &model.PostPaidServerEipBandwidth{
+			Size:       &sizePostPaidServerEipBandwidth,
+			Sharetype:  model.GetPostPaidServerEipBandwidthSharetypeEnum().PER,
+			Chargemode: &chargemodePostPaidServerEipBandwidth,
+		}
 		eipPostPaidServerPublicip := &model.PostPaidServerEip{
 			Iptype:    "5_bgp",
 			Bandwidth: bandwidthPostPaidServerEip,

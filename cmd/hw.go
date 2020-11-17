@@ -56,7 +56,14 @@ func init() {
 }
 
 func HuaweiCmdFunc(cmd *cobra.Command, args []string) {
+	fmt.Println("huawei command caled")
+}
 
+func PreRunHuaWei(cmd *cobra.Command, args []string) {
+	if ak == "" || sk == "" {
+		fmt.Println("ak or sk blank is not allow")
+		os.Exit(-1)
+	}
 }
 
 func NewHuaweiCmd() *cobra.Command {
@@ -65,12 +72,7 @@ func NewHuaweiCmd() *cobra.Command {
 		Aliases: []string{"hw"},
 		Short:   "huawei ecs create",
 		Run:     HuaweiCmdFunc,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			if ak == "" || sk == "" {
-				fmt.Println("ak or sk blank is not allow")
-				os.Exit(-1)
-			}
-		},
+		PreRun:  PreRunHuaWei,
 	}
 	cmd.AddCommand(NewHuaweiCreateCmd())
 	cmd.AddCommand(NewHuaweiListCmd())
@@ -83,6 +85,7 @@ func NewHuaweiCreateCmd() *cobra.Command {
 		Use:   "create",
 		Short: "create ecs in sgp",
 		Run:   HuaweiCreateCmdFunc,
+		PreRun: PreRunHuaWei,
 	}
 	cmd.Flags().BoolVar(&eip, "eip", false, "create huawei ecs with eip or not")
 	cmd.Flags().Int32VarP(&count, "count", "c", 1, "Specify huawei ecs count")
@@ -109,6 +112,7 @@ func NewHuaweiListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "list ecs in sgp",
 		Run:   HuaweiListCmdFunc,
+		PreRun: PreRunHuaWei,
 	}
 	cmd.Flags().StringVar(&serverId, "id", "", "huawei ecs server id")
 	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
@@ -131,6 +135,7 @@ func NewHuaweiIpCmd() *cobra.Command {
 		Use:   "ip",
 		Short: "ip ecs in sgp",
 		Run:   HuaweiListIpCmdFunc,
+		PreRun: PreRunHuaWei,
 	}
 	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
 	cmd.Flags().StringVar(&AvailabilityZone, "FlavorRef", "ap-southeast-3a", "huawei AvailabilityZone , default is centos xin jia po")
@@ -147,6 +152,7 @@ func NewHuaweiDeleteCmd() *cobra.Command {
 		Use:   "delete",
 		Short: "delete ecs in sgp",
 		Run:   HuaweiDeleteCmdFunc,
+		PreRun: PreRunHuaWei,
 	}
 	cmd.Flags().StringVar(&serverId, "id", "", "huawei ecs server id")
 	cmd.Flags().StringVar(&eipId, "eipId", "", "huawei ecs server public eipid")
