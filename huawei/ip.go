@@ -8,7 +8,7 @@ import (
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/eip/v2/model"
 )
 
-func (h *HClient) ListIps() {
+func (h *HClient) ListIps() error {
 
 	auth := basic.NewCredentialsBuilder().
 		WithAk(h.Ak).
@@ -29,12 +29,11 @@ func (h *HClient) ListIps() {
 	if err == nil {
 		date, _ := json.MarshalIndent(response.Floatingips, "", "    ")
 		fmt.Println(string(date))
-	} else {
-		fmt.Println(err)
 	}
+	return err
 }
 
-func (h *HClient) DeleteIp(ipId string) {
+func (h *HClient) DeleteIp(ipId string) error {
 	auth := basic.NewCredentialsBuilder().
 		WithAk(h.Ak).
 		WithSk(h.Sk).
@@ -54,7 +53,6 @@ func (h *HClient) DeleteIp(ipId string) {
 
 	if err == nil {
 		fmt.Printf("%+v\n", response)
-	} else {
-		fmt.Println(err)
 	}
+	return err
 }
