@@ -120,3 +120,12 @@ $ FIPID=$(jq -r ".[0].id" < ip.json)
 ```bash
 $ ./mycli huawei delete  --id $ID  --eipId $FIPID
 ```
+
+## docker use
+
+必须注入环境变量.也就是华为云的ak和sk必须有. 其他命令和命令行无异.
+
+
+```bash
+docker run --rm -e ak=$ak sk=$sk louisehong/mycli -h 
+```

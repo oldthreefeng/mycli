@@ -145,7 +145,7 @@ func (h *HClient) GenerateEipServer(count int32, eip bool, FlavorRef, ImageRef, 
 	}
 }
 
-func (h *HClient) DeleteServer(serverId string) {
+func (h *HClient) DeleteServer(serverId string, delPublicIp bool) {
 
 	client := h.EcsClient
 
@@ -155,8 +155,10 @@ func (h *HClient) DeleteServer(serverId string) {
 			Id: serverId,
 		},
 	}
+
 	request.Body = &model.DeleteServersRequestBody{
-		Servers: listServerIdServersDeleteServersRequestBody,
+		DeletePublicip: &delPublicIp,
+		Servers:        listServerIdServersDeleteServersRequestBody,
 	}
 
 	response, err := client.DeleteServers(request)

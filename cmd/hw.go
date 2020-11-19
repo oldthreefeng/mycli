@@ -155,7 +155,7 @@ func NewHuaweiDeleteCmd() *cobra.Command {
 		PreRun: PreRunHuaWei,
 	}
 	cmd.Flags().StringVar(&serverId, "id", "", "huawei ecs server id")
-	cmd.Flags().StringVar(&eipId, "eipId", "", "huawei ecs server public eipid")
+	cmd.Flags().BoolVar(&eip, "eip", false, "delete eip or not")
 	cmd.Flags().StringVar(&projectId, "projectId", "06b275f705800f262f3bc014ffcdbde1", "huawei project id")
 	cmd.Flags().StringVar(&AvailabilityZone, "FlavorRef", "ap-southeast-3a", "huawei AvailabilityZone , default is centos xin jia po")
 	return cmd
@@ -164,10 +164,6 @@ func NewHuaweiDeleteCmd() *cobra.Command {
 func HuaweiDeleteCmdFunc(cmd *cobra.Command, args []string) {
 	hc := huawei.GetDefaultHAuth(ak, sk, projectId, AvailabilityZone)
 	if serverId != "" {
-		hc.DeleteServer(serverId)
+		hc.DeleteServer(serverId, eip)
 	}
-	if eipId != "" {
-		hc.DeleteIp(eipId)
-	}
-
 }
