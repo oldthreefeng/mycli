@@ -3,8 +3,8 @@ MAINTAINER "louisehong <louisehong4168@gmail.com>"
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
         && apk update \
         && apk upgrade \
-        && apk add --no-cache bash  \
-                       curl
+        && apk add --no-cache bash jq bash-completion\
+                       curl wget
 
 ENTRYPOINT ["/entrypoint.sh"]
 

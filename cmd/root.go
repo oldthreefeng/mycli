@@ -17,28 +17,91 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
+	"github.com/oldthreefeng/mycli/pkg/sshutil"
+	"github.com/wonderivan/logger"
+	"golang.org/x/crypto/ssh"
 	"os"
+	"strings"
+	"sync"
 
-	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
+	"github.com/spf13/cobra"
 )
 
-var cfgFile string
+
+var command, localFilePath, remoteFilePath, mode string
+var user, password, pkFile, pkPassword string
+var host []string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "mycli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "cmd and scp for ssh",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		sshType := &sshutil.SSH{
+			User:     user,
+			Password: password,
+			PkFile:   pkFile,
+			PkPassword: pkPassword,
+		}
+		validate(sshType)
+		var wg sync.WaitGroup
+		for _, node := range host {
+			wg.Add(1)
+			go func(host string) {
+				defer wg.Done()
+				modes := strings.Split(mode, "|")
+				for i, _ := range modes {
+					exec(sshType, modes[i], host)
+				}
+			}(node)
+		}
+		wg.Wait()
+	},
+}
+
+func exec(ssh *sshutil.SSH, mode, host string) {
+	switch mode {
+	case "scp":
+		ssh.CopyForMD5(host, localFilePath, remoteFilePath, "")
+	case "ssh":
+		_ = ssh.CmdAsync(host, command)
+	}
+}
+
+//validate host is connect
+func validate(tSSH *sshutil.SSH) {
+	if len(host) == 0 {
+		logger.Error("hosts not allow empty")
+		os.Exit(1)
+	}
+	if tSSH.User == "" {
+		logger.Error("user not allow empty")
+		os.Exit(1)
+	}
+	var session *ssh.Session
+	var errors []error
+	for _, h := range host {
+		session, err := tSSH.Connect(h)
+		if err != nil {
+			logger.Error("[%s] ------------ check error", h)
+			logger.Error("[%s] ------------ error[%s]", h, err)
+			errors = append(errors, err)
+		} else {
+			logger.Info("[%s]  ------------ check ok", h)
+			logger.Info("[%s]  ------------ session[%p]", h, session)
+		}
+	}
+	defer func() {
+		if session != nil {
+			session.Close()
+		}
+	}()
+	if len(errors) > 0 {
+		logger.Error("has some linux server is connection ssh is failed")
+		os.Exit(1)
+	}
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -51,40 +114,19 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
+	logger.Cfg()
 	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.mycli.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().StringVar(&user, "user", "root", "servers user name for ssh")
+	rootCmd.Flags().StringVar(&password, "passwd", "", "password for ssh")
+	rootCmd.Flags().StringVar(&pkFile, "pk", "/root/.ssh/id_rsa", "private key for ssh")
+	rootCmd.Flags().StringVar(&pkPassword, "pk-passwd", "", "private key password for ssh")
+	rootCmd.Flags().StringSliceVar(&host, "host", []string{}, "exec host")
+	rootCmd.Flags().StringVar(&command, "cmd", "", "exec shell")
+	rootCmd.Flags().StringVar(&localFilePath, "local-path", "", "local path , ex /etc/local.txt")
+	rootCmd.Flags().StringVar(&remoteFilePath, "remote-path", "", "local path , ex /etc/local.txt")
+	rootCmd.Flags().StringVar(&mode, "mode", "ssh", "mode type ,use | spilt . ex ssh  scp ssh|scp scp|ssh")
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home directory with name ".mycli" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".mycli")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-}
 
 func getDefaultPathname(key, defVal string)  string {
 	val, ex := os.LookupEnv(key)
