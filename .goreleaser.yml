@@ -15,12 +15,12 @@ builds:
       - arm64
     ldflags:
       - -s -w -X github.com/oldthreefeng/mycli/cmd.Version={{.Version}} -X github.com/oldthreefeng/mycli/cmd.Githash={{.ShortCommit}} -X github.com/oldthreefeng/mycli/cmd.Buildstamp={{.Date}} -X github.com/oldthreefeng/mycli/cmd.Author=goreleaser
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      amd64: x86_64
-      arm64: aarch64
+#archives:
+#  - replacements:
+#      darwin: Darwin
+#      linux: Linux
+#      amd64: x86_64
+#      arm64: aarch64
 checksum:
   name_template: 'checksums.txt'
 snapshot:
