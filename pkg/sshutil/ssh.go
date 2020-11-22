@@ -3,6 +3,7 @@ package sshutil
 import (
 	"bufio"
 	"github.com/wonderivan/logger"
+	"io"
 	"strings"
 )
 
@@ -33,7 +34,7 @@ func (ss *SSH) Cmd(host string, cmd string) []byte {
 }
 
 func (ss *SSH) CmdAsync(host string, cmd string) error {
-	logger.Info("[ssh][%s]exec cmd is : %s", host, cmd)
+	logger.Info("[ssh][%s] %s", host, cmd)
 	session, err := ss.Connect(host)
 	if err != nil {
 		logger.Error("[ssh][%s]Error create ssh session failed,%s", host, err)
@@ -45,24 +46,48 @@ func (ss *SSH) CmdAsync(host string, cmd string) error {
 		logger.Error("[ssh][%s]Unable to request StdoutPipe(): %s", host, err)
 		return err
 	}
+	stderr, err := session.StderrPipe()
+	if err != nil {
+		logger.Error("[ssh][%s]Unable to request StderrPipe(): %s", host, err)
+		return err
+	}
 	if err := session.Start(cmd); err != nil {
 		logger.Error("[ssh][%s]Unable to execute command: %s", host, err)
 		return err
 	}
-	done := make(chan bool, 1)
+	doneout := make(chan bool, 1)
+	doneerr := make(chan bool, 1)
 	go func() {
-		for {
-			r := bufio.NewReader(stdout)
-			line, _, err := r.ReadLine()
-			if line == nil || err != nil {
-				done <- true
+		readPipe(host, stderr, true)
+		doneerr <- true
+	}()
+	go func() {
+		readPipe(host, stdout, false)
+		doneout <- true
+	}()
+	<-doneerr
+	<-doneout
+	return session.Wait()
+}
+
+func readPipe(host string, pipe io.Reader, isErr bool) {
+	r := bufio.NewReader(pipe)
+	for {
+		line, _, err := r.ReadLine()
+		if line == nil {
+			return
+		} else if err != nil {
+			logger.Info("[%s] %s", host, line)
+			logger.Error("[ssh] [%s] %s", host, err)
+			return
+		} else {
+			if isErr {
+				logger.Error("[%s] %s", host, line)
 			} else {
-				logger.Info("[ssh][%s]: %s", host, line)
+				logger.Info("[%s] %s", host, line)
 			}
 		}
-	}()
-	<-done
-	return nil
+	}
 }
 
 //CmdToString is in host exec cmd and replace to spilt str
