@@ -4,7 +4,7 @@ MAINTAINER "louisehong <louisehong4168@gmail.com>"
 ARG TARGETPLATFORM
 RUN apk update \
     && apk upgrade \
-    && apk add --no-cache
+    && apk add --no-cache \
      bash \
      jq \
      bash-completion \
