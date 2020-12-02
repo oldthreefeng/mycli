@@ -30,7 +30,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../sshcmd" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../sealos" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
   </component>
   <component name="RecentsManager">
@@ -51,9 +51,9 @@
     </environment>
   </component>
   <component name="WindowStateProjectService">
-    <state x="421" y="102" key="FileChooserDialogImpl" timestamp="1606048319817">
+    <state x="421" y="102" key="FileChooserDialogImpl" timestamp="1606402271675">
       <screen x="0" y="0" width="1280" height="720" />
     </state>
-    <state x="421" y="102" key="FileChooserDialogImpl/0.0.1280.720@0.0.1280.720" timestamp="1606048319817" />
+    <state x="421" y="102" key="FileChooserDialogImpl/0.0.1280.720@0.0.1280.720" timestamp="1606402271675" />
   </component>
 </project>

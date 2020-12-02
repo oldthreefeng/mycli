@@ -1,23 +1,73 @@
-## huawei cloud for sealos test
+# mycli
+
+## 引用了`sshcmd`
 
 ```bash
 $ go build -o mycli main.go
-$ ./mycli -h
+cmd and scp for ssh
 
 Usage:
+  mycli [flags]
   mycli [command]
 
 Available Commands:
   completion  Output shell completion code for the specified shell (bash or zsh)
   help        Help about any command
   huawei      huawei ecs create
+  version     A brief description of your command
 
 Flags:
-      --config string   config file (default is $HOME/.mycli.yaml)
-  -h, --help            help for mycli
-  -t, --toggle          Help message for toggle
+      --cmd string           exec shell
+  -h, --help                 help for mycli
+      --host strings         exec host
+      --local-path string    local path , ex /etc/local.txt
+      --mode string          mode type ,use | spilt . ex ssh  scp ssh|scp scp|ssh (default "ssh")
+      --passwd string        password for ssh
+      --pk string            private key for ssh (default "/root/.ssh/id_rsa")
+      --pk-passwd string     private key password for ssh
+      --remote-path string   local path , ex /etc/local.txt
+      --user string          servers user name for ssh (default "root")
 
 Use "mycli [command] --help" for more information about a command.
+```
+
+ssh:
+```bash
+$ sshcmd --user cuisongliu --passwd admin --host 127.0.0.1 --cmd "ls -l"
+```
+
+
+scp:
+```bash
+$ sshcmd --user cuisongliu --passwd admin --host 127.0.0.1 \
+    --mode "scp" --local-path "/aa.txt" --remote-path "/aa.txt"
+
+```
+
+
+## huawei cloud for sealos test
+
+```bash
+$ go build -o mycli main.go
+$ ./mycli huawei -h
+huawei ecs create
+
+Usage:
+  mycli huawei [flags]
+  mycli huawei [command]
+
+Aliases:
+  huawei, hw
+
+Available Commands:
+  create      create ecs in sgp
+  delete      delete ecs in sgp
+  list        list ecs in sgp
+
+Flags:
+  -h, --help   help for huawei
+
+Use "mycli huawei [command] --help" for more information about a command.
 
 ```
 
@@ -115,10 +165,10 @@ $ mycli hw list ip > ip.json
 $ FIPID=$(jq -r ".[0].id" < ip.json)
 ```
 
-删除主机及eip. 单独删除主机不会连带删除eip.
+删除主机及eip. 单独删除主机不会连带删除eip. 需要加上`--eip`参数去删除.
 
 ```bash
-$ ./mycli huawei delete  --id $ID  --eipId $FIPID
+$ ./mycli huawei delete  --id $ID  --eip
 ```
 
 ## docker use
