@@ -73,7 +73,7 @@ func (h *HClient) Show(serverid string) {
 	}
 }
 
-func (h *HClient) GenerateEipServer(count int32, eip bool, FlavorRef, ImageRef, Vpcid, SubnetId, adminPass, keyName string) []string {
+func (h *HClient) GenerateEipServer(count, sizePostPaidServerEipBandwidth, sizePostPaidServerRootVolume int32, eip bool, FlavorRef, ImageRef, Vpcid, SubnetId, adminPass, keyName string) []string {
 
 	client := h.EcsClient
 	request := &model.CreatePostPaidServersRequest{}
@@ -90,7 +90,6 @@ func (h *HClient) GenerateEipServer(count int32, eip bool, FlavorRef, ImageRef, 
 	}
 	publicipPostPaidServer := &model.PostPaidServerPublicip{}
 	if eip {
-		sizePostPaidServerEipBandwidth := int32(50)
 		chargemodePostPaidServerEipBandwidth := "traffic"
 		bandwidthPostPaidServerEip := &model.PostPaidServerEipBandwidth{
 			Size:       &sizePostPaidServerEipBandwidth,
@@ -109,7 +108,6 @@ func (h *HClient) GenerateEipServer(count int32, eip bool, FlavorRef, ImageRef, 
 	isAutoRenamePostPaidServer := false
 	keyNamePostPaidServer := keyName
 	adminPassPostPaidServer := adminPass
-	sizePostPaidServerRootVolume := int32(40)
 	rootVolumePostPaidServer := &model.PostPaidServerRootVolume{
 		Volumetype: model.GetPostPaidServerRootVolumeVolumetypeEnum().SSD,
 		Size:       &sizePostPaidServerRootVolume,
