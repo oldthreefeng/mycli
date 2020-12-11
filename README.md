@@ -33,13 +33,13 @@ Use "mycli [command] --help" for more information about a command.
 
 ssh:
 ```bash
-$ sshcmd --user cuisongliu --passwd admin --host 127.0.0.1 --cmd "ls -l"
+$ mycli --user oldthreefeng --passwd admin --host 127.0.0.1 --cmd "ls -l"
 ```
 
 
 scp:
 ```bash
-$ sshcmd --user cuisongliu --passwd admin --host 127.0.0.1 \
+$ mycli --user oldthreefeng --passwd admin --host 127.0.0.1 \
     --mode "scp" --local-path "/aa.txt" --remote-path "/aa.txt"
 
 ```
