@@ -31,6 +31,7 @@ import (
 var command, localFilePath, remoteFilePath, mode string
 var user, password, pkFile, pkPassword string
 var host []string
+var Debug bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -114,7 +115,7 @@ func Execute() {
 }
 
 func init() {
-	logger.Cfg()
+	cobra.OnInitialize(initConfig)
 	// Here you will define your flags and configuration settings.
 	rootCmd.Flags().StringVar(&user, "user", "root", "servers user name for ssh")
 	rootCmd.Flags().StringVar(&password, "passwd", "", "password for ssh")
@@ -125,13 +126,28 @@ func init() {
 	rootCmd.Flags().StringVar(&localFilePath, "local-path", "", "local path , ex /etc/local.txt")
 	rootCmd.Flags().StringVar(&remoteFilePath, "remote-path", "", "local path , ex /etc/local.txt")
 	rootCmd.Flags().StringVar(&mode, "mode", "ssh", "mode type ,use | spilt . ex ssh  scp ssh|scp scp|ssh")
+	rootCmd.Flags().BoolVar(&Debug,"debug", false, "log level")
+}
+
+func initConfig()  {
+	if Debug {
+		logger.CfgDbg()
+	} else {
+		logger.CfgInfo()
+	}
 }
 
 
-func getDefaultPathname(key, defVal string)  string {
+func EnvDefault(key, defVal string)  string {
 	val, ex := os.LookupEnv(key)
-	if !ex {
+	if !ex || val == "" {
 		return defVal
 	}
 	return val
+}
+
+// IsEnvSet returns true if an environment variable is set
+func IsEnvSet(key string) bool {
+	_, ok := os.LookupEnv(key)
+	return ok
 }

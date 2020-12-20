@@ -23,14 +23,13 @@ import (
 )
 
 var (
-	ak               = getDefaultPathname("ak", "")
-	sk               = getDefaultPathname("sk", "")
+	ak               = EnvDefault("ak", "")
+	sk               = EnvDefault("sk", "")
 	eip              bool
 	count            int32
 	eipBandwidth     int32
 	rootVolume       int32
 	serverId         string
-	eipId            string
 	adminPass        string
 	SubnetId         string
 	Vpcid            string
