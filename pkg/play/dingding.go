@@ -23,9 +23,9 @@ const (
 	LinkTemplate = `{
     "msgtype": "link", 
     "link": {
-        "text": "%s", 
-        "title": "%s", 
-        "picUrl": "http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-check-icon.png", //jenkins 发布的对勾
+        "text": "%s",
+        "title": "%s",
+        "picUrl": "",
         "messageUrl": "%s"
     }
 }`
