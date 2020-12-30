@@ -17,16 +17,16 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/oldthreefeng/mycli/pkg/sshutil"
-	"github.com/wonderivan/logger"
-	"golang.org/x/crypto/ssh"
 	"os"
 	"strings"
 	"sync"
 
+	"github.com/oldthreefeng/mycli/pkg/sshutil"
+	"github.com/wonderivan/logger"
+	"golang.org/x/crypto/ssh"
+
 	"github.com/spf13/cobra"
 )
-
 
 var command, localFilePath, remoteFilePath, mode string
 var user, password, pkFile, pkPassword string
@@ -41,9 +41,9 @@ var rootCmd = &cobra.Command{
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		sshType := &sshutil.SSH{
-			User:     user,
-			Password: password,
-			PkFile:   pkFile,
+			User:       user,
+			Password:   password,
+			PkFile:     pkFile,
 			PkPassword: pkPassword,
 		}
 		validate(sshType)
@@ -53,7 +53,7 @@ var rootCmd = &cobra.Command{
 			go func(host string) {
 				defer wg.Done()
 				modes := strings.Split(mode, "|")
-				for i, _ := range modes {
+				for i := range modes {
 					exec(sshType, modes[i], host)
 				}
 			}(node)
@@ -126,10 +126,10 @@ func init() {
 	rootCmd.Flags().StringVar(&localFilePath, "local-path", "", "local path , ex /etc/local.txt")
 	rootCmd.Flags().StringVar(&remoteFilePath, "remote-path", "", "local path , ex /etc/local.txt")
 	rootCmd.Flags().StringVar(&mode, "mode", "ssh", "mode type ,use | spilt . ex ssh  scp ssh|scp scp|ssh")
-	rootCmd.Flags().BoolVar(&Debug,"debug", false, "log level")
+	rootCmd.Flags().BoolVar(&Debug, "debug", false, "log level")
 }
 
-func initConfig()  {
+func initConfig() {
 	if Debug {
 		logger.CfgDbg()
 	} else {
@@ -137,8 +137,7 @@ func initConfig()  {
 	}
 }
 
-
-func EnvDefault(key, defVal string)  string {
+func EnvDefault(key, defVal string) string {
 	val, ex := os.LookupEnv(key)
 	if !ex || val == "" {
 		return defVal
