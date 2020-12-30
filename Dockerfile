@@ -1,5 +1,5 @@
 FROM alpine:latest
-MAINTAINER "louisehong <louisehong4168@gmail.com>"
+LABEL maintainer="louisehong <louisehong4168@gmail.com>"
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
         && apk update \
         && apk upgrade \

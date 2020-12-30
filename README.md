@@ -179,3 +179,30 @@ $ ./mycli huawei delete  --id $ID  --eip
 ```bash
 docker run --rm -e ak=$ak sk=$sk louisehong/mycli -h 
 ```
+
+
+## apisix 使用
+
+目前由于cert证书使用acme.sh. 手动上传至apisix实在是件很蛋疼的事情。
+
+```
+$ mycli apisix list
+$ mycli apisix get $SSL_ROUTE_ID
+$ mycli apisix update $SSL_ROUTE_ID
+
+$ mycli apisix update --updateAll
+```
+
+目录结构
+
+```
+$ tree ~/tmp/sslcert -d -L 1 | grep 'cn|com'
+/Users/louis/tmp/sslcert
+├── beta.fenghong.tech
+├── ca
+├── deploy
+├── dnsapi
+├── notify
+├── ossutil_output
+└── t3.fenghong.tech
+```

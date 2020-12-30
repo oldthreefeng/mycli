@@ -43,7 +43,7 @@ const defaultCopyRight = `
 var (
 	completionShells = map[string]func(out io.Writer, boilerPlate string, cmd *cobra.Command) error{
 		"bash": runCompletionBash,
-		"zsh": runCompletionZsh,
+		"zsh":  runCompletionZsh,
 	}
 	completionExample = `
 	# Installing bash completion on macOS using homebrew
@@ -88,7 +88,7 @@ func NewCmdCompletion(out io.Writer, boilerPlate string) *cobra.Command {
 		Use:                   "completion bash",
 		DisableFlagsInUseLine: true,
 		Short:                 "Output shell completion code for the specified shell (bash or zsh)",
-		Example: completionExample,
+		Example:               completionExample,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := RunCompletion(out, boilerPlate, cmd, args)
 			if err != nil {
@@ -126,7 +126,6 @@ func runCompletionBash(out io.Writer, copyRight string, mycli *cobra.Command) er
 
 	return mycli.GenBashCompletion(out)
 }
-
 
 func runCompletionZsh(out io.Writer, copyRight string, mycli *cobra.Command) error {
 	zshHead := "#compdef mycli\n"

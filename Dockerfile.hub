@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.0-experimental
 FROM alpine:latest
-MAINTAINER "louisehong <louisehong4168@gmail.com>"
+LABEL maintainer="louisehong <louisehong4168@gmail.com>"
 ARG TARGETPLATFORM
 RUN apk update \
     && apk upgrade \
