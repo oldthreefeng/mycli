@@ -52,11 +52,11 @@ func getEcsInstanceList() ([]string, []AliEcs) {
 			a.InternalIp = v.VpcAttributes.PrivateIpAddress.IpAddress[0]
 		}
 		for _, k := range v.Tags.Tag {
-			if strings.Contains(k.TagValue, "prod") {
+			if strings.Contains(k.TagValue, "prod") && !strings.Contains(k.TagValue, "non_prod") {
 				a.IsProd = true
 			}
 		}
-		if strings.Contains(a.NickName, "prod") {
+		if strings.Contains(a.NickName, "prod") && !strings.Contains(a.NickName, "non_prod") {
 			a.IsProd = true
 		}
 		al = append(al, a)
