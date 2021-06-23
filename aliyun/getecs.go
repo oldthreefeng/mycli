@@ -18,6 +18,7 @@ type AliEcs struct {
 	InternalIp string `json:"internal_ip"`
 	NickName   string `json:"nick_name"`
 	Expire     string `json:"expire"`
+	IsProd     bool   `json:"is_prod"`
 }
 
 func newClient() *ecs.Client {
@@ -49,6 +50,14 @@ func getEcsInstanceList() ([]string, []AliEcs) {
 		a.Expire = v.ExpiredTime
 		if len(v.VpcAttributes.PrivateIpAddress.IpAddress) > 0 {
 			a.InternalIp = v.VpcAttributes.PrivateIpAddress.IpAddress[0]
+		}
+		for _, k := range v.Tags.Tag {
+			if strings.Contains(k.TagValue, "prod") {
+				a.IsProd = true
+			}
+		}
+		if strings.Contains(a.NickName, "prod") {
+			a.IsProd = true
 		}
 		al = append(al, a)
 		instanceList = append(instanceList, v.InstanceId)
@@ -121,8 +130,7 @@ func dump(prod bool) {
 	if prod {
 		for _, v := range al {
 			//fmt.Println(v.InternalIp)
-			if strings.HasPrefix(v.InternalIp, "192.168.110") ||  strings.HasPrefix(v.InternalIp, "192.168.32"){
-	
+			if v.IsProd {
 				pl = append(pl, v)
 			}
 		}
@@ -164,7 +172,7 @@ func getProd(loaded bool) []AliEcs {
 	}
 	for _, v := range al {
 		//fmt.Println(v.InternalIp)
-		if strings.HasPrefix(v.InternalIp, "192.168.110") ||  strings.HasPrefix(v.InternalIp, "192.168.32"){
+		if strings.HasPrefix(v.InternalIp, "192.168.110") || strings.HasPrefix(v.InternalIp, "192.168.32") {
 
 			pl = append(pl, v)
 		}
