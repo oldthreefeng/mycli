@@ -136,6 +136,7 @@ func dump(prod bool) {
 		}
 		if len(pl) == 0 {
 			logger.Warn("you dont have any prod ecs")
+			return
 		} else {
 			al = pl
 		}
@@ -172,8 +173,7 @@ func getProd(loaded bool) []AliEcs {
 	}
 	for _, v := range al {
 		//fmt.Println(v.InternalIp)
-		if strings.HasPrefix(v.InternalIp, "192.168.110") || strings.HasPrefix(v.InternalIp, "192.168.32") {
-
+		if v.IsProd {
 			pl = append(pl, v)
 		}
 	}
