@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1022
+	github.com/go-redis/redis/v8 v8.11.0
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.0.21-beta
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.12.0
