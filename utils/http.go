@@ -151,6 +151,7 @@ func EnvDefault(key, defVal string) string {
 	return val
 }
 
+
 // IsEnvSet returns true if an environment variable is set
 func IsEnvSet(key string) bool {
 	_, ok := os.LookupEnv(key)
