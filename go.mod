@@ -6,6 +6,7 @@ require (
 	github.com/alibabacloud-go/cas-20200407 v1.0.5
 	github.com/alibabacloud-go/darabonba-openapi v0.1.18
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.2
+	github.com/alibabacloud-go/openapi-util v0.1.0
 	github.com/alibabacloud-go/r-kvstore-20150101/v3 v3.0.0
 	github.com/alibabacloud-go/rds-20140815/v3 v3.0.3
 	github.com/alibabacloud-go/tea v1.1.19
